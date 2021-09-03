@@ -1,34 +1,35 @@
 import { Request, Response } from 'express';
-import UserModel from '../models/User';
+import RoomModel from '../models/Room';
 
-class UserController {
+class RoomController {
 
   async index(req: Request, res: Response) {
-    const users = await UserModel.find();
-    return res.json(users);
+    const Rooms = await RoomModel.find();
+    return res.json(Rooms);
   }
 
   async show(req: Request, res: Response) {
-    const user = await UserModel.findOne(req.params);
-    return res.json(user);
+    const room = await RoomModel.findOne(req.params);
+    return res.json(room);
   }
 
   async create(req: Request, res: Response) {
-    const { name, email, age } = req.body;
-    const newUser = new UserModel({ name, email, age });
+    const ownerId = req.headers.ownerid;
+    const { maxConnections } = req.body;
+    const newRoom = new RoomModel({ ownerId, maxConnections });
     try {
-      await newUser.save();
+      await newRoom.save();
     } catch (err) {
       return res.status(404).json('Bad request');
     }
-    return res.json(newUser);
+    return res.json(newRoom);
   }
 
   async delete(req: Request, res: Response) {
     const { id } = req.params;
     let isDeleted;
     try {
-      isDeleted = await UserModel.findOneAndRemove({ id });
+      isDeleted = await RoomModel.findOneAndRemove({ id });
     } catch (err) {
       return res.status(404).json('Bad request');
     }
@@ -37,15 +38,15 @@ class UserController {
   async update(req: Request, res: Response) {
     const { id } = req.params;
     const body = req.body;
-    let userUpdated;
+    let roomUpdated;
     try {
-      await UserModel.findOneAndUpdate({ id }, body);
-      userUpdated = await UserModel.findOne({ id });
+      await RoomModel.findOneAndUpdate({ id }, body);
+      roomUpdated = await RoomModel.findOne({ id });
     } catch (err) {
       return res.status(404).json('Bad request');
     }
-    return res.json(userUpdated);
+    return res.json(roomUpdated);
   }
 }
 
-export default new UserController
+export default new RoomController

@@ -1,5 +1,6 @@
 import express from 'express';
 import userRouter from './routes/userRoutes';
+import roomRouter from './routes/roomRoutes';
 
 
 import dotenv from 'dotenv';
@@ -20,6 +21,7 @@ class App {
 
   routes() {
     this.app.use(userRouter);
+    this.app.use(roomRouter);
   }
 }
 
