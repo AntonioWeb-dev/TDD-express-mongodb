@@ -1,0 +1,33 @@
+{
+  "name": "tdd",
+  "version": "1.0.0",
+  "description": "TDD example",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "dev": "npx ts-node-dev src/server.ts"
+  },
+  "author": "Antonio",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/plugin-syntax-flow": "^7.14.5",
+    "@babel/preset-env": "^7.15.0",
+    "@shelf/jest-mongodb": "^2.0.3",
+    "@types/express": "^4.17.13",
+    "@types/jest": "^27.0.1",
+    "@types/lodash": "^4.14.172",
+    "@types/supertest": "^2.0.11",
+    "@types/validator": "^13.6.3",
+    "jest": "^27.1.0",
+    "ts-jest": "^27.0.5",
+    "ts-node-dev": "^1.1.8"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "lodash": "^4.17.21",
+    "mongoose": "^6.0.3",
+    "supertest": "^6.1.6",
+    "validator": "^13.6.0"
+  }
+}
