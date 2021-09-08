@@ -1,21 +1,21 @@
 import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config()
+import './database';
+
 import userRouter from './routes/userRoutes';
 import roomRouter from './routes/roomRoutes';
 
 
-import dotenv from 'dotenv';
-dotenv.config()
-import './database';
 
 class App {
   app: express.Application;
   constructor() {
     this.app = express();
-    this.middlewares();
+    this.configs();
     this.routes();
   }
-
-  middlewares() {
+  configs() {
     this.app.use(express.json());
   }
 

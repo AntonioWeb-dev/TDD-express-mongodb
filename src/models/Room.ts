@@ -1,8 +1,12 @@
 import { Schema, model } from 'mongoose';
-import { IRoom } from '../interfaces/room.interface';
+import { IRoom } from '../interfaces/IRoom/room.interface';
 
 const roomSchema = new Schema<IRoom>({
   ownerId: {
+    type: String,
+    required: true,
+  },
+  name: {
     type: String,
     required: true,
   },

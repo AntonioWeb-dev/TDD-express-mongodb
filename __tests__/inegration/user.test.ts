@@ -19,7 +19,7 @@ describe('Test users routes ', () => {
         age: 56,
       });
     expect(res.body.email).toBe('test@gmail.com');
-    userId = res.body.id;
+    userId = res.body._id;
   });
 
   it('should get users route GET-/users', async () => {
@@ -39,7 +39,7 @@ describe('Test users routes ', () => {
   it('should delete an user name DELETE-/users/:id', async () => {
     const res = await request(app)
       .delete(`/users/${userId}`)
-    expect(res.body.id).toBe(userId);
+    expect(res.body._id).toBe(userId);
     mongoose.connection.close();
   });
 

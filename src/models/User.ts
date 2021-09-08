@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import validator from 'validator';
-import { IUser } from '../interfaces/user.interface';
+import { IUser } from '../interfaces/IUser/user.interface';
 
 const userSchema = new Schema<IUser>({
   name: {
@@ -16,15 +16,11 @@ const userSchema = new Schema<IUser>({
     type: Number,
     required: true
   },
+  avatar: {
+    type: String,
+    default: 'undefined'
+  }
 })
-userSchema.path('name').validate(function (name: string) {
-  return (name.length > 3 && name.length < 15);
-}, 'Name must have between 3-15 characters', 'BAD_REQUEST');
-
-userSchema.path('email').validate(function (email: string) {
-  return validator.isEmail(email);
-}, 'Name must have between 3-15 characters', 'BAD_REQUEST');
-
 
 const UserModel = model<IUser>('Users', userSchema);
 

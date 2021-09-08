@@ -1,6 +1,9 @@
 import { Router } from 'express';
-import userController from '../controllers/UserController';
+import { UserController } from '../controllers/UserController';
+import { UserService } from '../service/UserSerivice';
 const routes = Router();
+
+const userController = new UserController(new UserService());
 
 routes.get('/users', userController.index);
 routes.get('/users/:id', userController.show);
