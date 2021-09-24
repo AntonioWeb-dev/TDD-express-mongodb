@@ -1,9 +1,12 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { IUser } from '../interfaces/IUser/user.interface';
 import { IUserService } from '../interfaces/IUser/userService.interface';
+import { SendEmail } from '../aws/services/SES/Ses.send-email';
+import { GetTemplates } from '../utils/GetPath';
 
 /**
  * @class UserController
- * @desc Responsável por lidar com solicitações de API para a rota /users
+ * @desc Responsible to handle with requests meda to API - endpoint: /users
  **/
 
 export class UserController {
@@ -18,44 +21,55 @@ export class UserController {
     this.update = this.update.bind(this);
   }
 
-  async index(req: Request, res: Response) {
-    const users = await this.userService.index();
-    return res.json(users);
+  async index(req: Request, res: Response, next: NextFunction) {
+    try {
+      const users = await this.userService.index();
+      return res.json(users);
+    } catch (err) {
+      next(err)
+    }
   }
 
-  async show(req: Request, res: Response) {
-    const user = await this.userService.show(req.params.id);
-    return res.json(user);
+  async show(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = await this.userService.show(req.params.id);
+      return res.json(user);
+    } catch (err) {
+      next(err)
+    }
   }
 
-  async create(req: Request, res: Response) {
+  async create(req: Request, res: Response, next: NextFunction) {
     const { name, email, age } = req.body;
-    let newUser = {};
+    let newUser: IUser;
     try {
       newUser = await this.userService.create({ name, email, age })
-    } catch (err: any) {
-      return res.status(err.status).json(err.message);
+      const template = await GetTemplates('CreateAcount');
+      const emailService = new SendEmail("Conta criada", template);
+      emailService.send([newUser.email])
+      return res.json(newUser);
+    } catch (err) {
+      next(err);
     }
-    return res.json(newUser);
   }
 
-  async delete(req: Request, res: Response) {
+  async delete(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     let isDeleted;
     try {
       isDeleted = await this.userService.delete(id);
-    } catch (err: any) {
-      return res.status(err.status).json(err.message);
+    } catch (err) {
+      next(err);
     }
     return res.json(isDeleted);
   }
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     let userUpdated;
     try {
       userUpdated = await this.userService.update(id, req.body);
-    } catch (err: any) {
-      return res.status(err.status).json(err.message);
+    } catch (err) {
+      next(err);
     }
     return res.json(userUpdated);
   }

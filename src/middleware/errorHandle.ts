@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ICustomError } from '../interfaces/error.interface';
 
-export const errorHandle = (err: ICustomError, req: Request, res: Response, next: NextFunction) => {
+export const errorHandler = (err: ICustomError, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof Error) {
     return res.status(err.status).json({
       error: err.message,

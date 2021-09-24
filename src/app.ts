@@ -5,6 +5,7 @@ import './database';
 
 import userRouter from './routes/userRoutes';
 import roomRouter from './routes/roomRoutes';
+import { errorHandler } from './middleware/errorHandle';
 
 
 
@@ -14,9 +15,13 @@ class App {
     this.app = express();
     this.configs();
     this.routes();
+    this.middlewares();
   }
   configs() {
     this.app.use(express.json());
+  }
+  middlewares() {
+    this.app.use(errorHandler)
   }
 
   routes() {

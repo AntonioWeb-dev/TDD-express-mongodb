@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/UserController';
 import { UserService } from '../service/UserSerivice';
-const routes = Router();
 
+const routes = Router();
 const userController = new UserController(new UserService());
 
 routes.get('/users', userController.index);
