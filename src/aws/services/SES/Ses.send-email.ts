@@ -1,6 +1,5 @@
 import { sesClient } from '../../clients/SES-client';
 import { SendEmailCommand } from '@aws-sdk/client-ses';
-import fs from "fs";
 import CustomError from '../../../utils/CustomError';
 
 export class SendEmail {

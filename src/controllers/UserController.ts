@@ -3,6 +3,7 @@ import { IUser } from '../interfaces/IUser/user.interface';
 import { IUserService } from '../interfaces/IUser/userService.interface';
 import { SendEmail } from '../aws/services/SES/Ses.send-email';
 import { GetTemplates } from '../utils/GetPath';
+import { IS3Service } from '../interfaces/s3.interface';
 
 /**
  * @class UserController
@@ -11,9 +12,11 @@ import { GetTemplates } from '../utils/GetPath';
 
 export class UserController {
   private userService: IUserService;
+  private S3: IS3Service;
 
-  constructor(userService: IUserService) {
+  constructor(userService: IUserService, S3: IS3Service) {
     this.userService = userService;
+    this.S3 = S3;
     this.create = this.create.bind(this);
     this.index = this.index.bind(this);
     this.show = this.show.bind(this);
@@ -40,10 +43,17 @@ export class UserController {
   }
 
   async create(req: Request, res: Response, next: NextFunction) {
-    const { name, email, age } = req.body;
+    const { name, email, age } = JSON.parse(req.body['body']);
+    const file = req.file;
+
+    let avatarURL: string | undefined;
     let newUser: IUser;
+    if (file) {
+      avatarURL = await this.S3.saveFile(file.filename)
+    }
     try {
-      newUser = await this.userService.create({ name, email, age })
+      newUser = await this.userService.create({ name, email, age, avatar: avatarURL })
+      // Get template html, params is the file's name without *.html
       const template = await GetTemplates('CreateAcount');
       const emailService = new SendEmail("Conta criada", template);
       emailService.send([newUser.email])

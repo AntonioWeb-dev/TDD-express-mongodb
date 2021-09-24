@@ -11,4 +11,5 @@ describe("#Test aws - SES service", () => {
     const data = await sendEmail.send([emailParams])
     expect(data).toBe(true)
   })
+
 })
