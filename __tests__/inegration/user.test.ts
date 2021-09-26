@@ -14,9 +14,11 @@ describe('Test users routes ', () => {
     const res = await request(app)
       .post('/users')
       .send({
-        name: 'UserTest',
-        email: 'test@gmail.com',
-        age: 56,
+        body: JSON.stringify({
+          name: 'UserTest',
+          email: 'test@gmail.com',
+          age: 56,
+        })
       });
     expect(res.body.email).toBe('test@gmail.com');
     userId = res.body._id;

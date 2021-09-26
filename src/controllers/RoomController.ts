@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { IRoomService } from '../interfaces/IRoom/roomService.interface';
 
 export class RoomController {
@@ -12,17 +12,25 @@ export class RoomController {
     this.update = this.update.bind(this);
   }
 
-  async index(req: Request, res: Response) {
-    const rooms = await this.roomService.index();
-    return res.json(rooms);
+  async index(req: Request, res: Response, next: NextFunction) {
+    try {
+      const rooms = await this.roomService.index();
+      return res.json(rooms);
+    } catch (err) {
+      next(err)
+    }
   }
 
-  async show(req: Request, res: Response) {
-    const room = await this.roomService.show(req.body.id);
-    return res.json(room);
+  async show(req: Request, res: Response, next: NextFunction) {
+    try {
+      const room = await this.roomService.show(req.body.id);
+      return res.json(room);
+    } catch (err) {
+      next(err)
+    }
   }
 
-  async create(req: Request, res: Response) {
+  async create(req: Request, res: Response, next: NextFunction) {
     const ownerId = req.headers['ownerid'];
     if (typeof ownerId !== 'string') {
       return res.status(400).json('Missing ownerId');
@@ -31,31 +39,31 @@ export class RoomController {
     let newRoom = {};
     try {
       newRoom = await this.roomService.create({ maxConnections, ownerId, name });
+      return res.json(newRoom);
     } catch (err: any) {
-      return res.status(err.status).json(err.message);
+      next(err)
     }
-    return res.json(newRoom);
   }
 
-  async delete(req: Request, res: Response) {
+  async delete(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     let isDeleted;
     try {
       isDeleted = await this.roomService.delete(id);
-    } catch (err: any) {
-      return res.status(err.status).json(err.message);
+      return res.json(isDeleted);
+    } catch (err) {
+      next(err)
     }
-    return res.json(isDeleted);
   }
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     const body = req.body;
     let roomUpdated;
     try {
       roomUpdated = await this.roomService.update(id, body);
+      return res.json(roomUpdated);
     } catch (err) {
-      return res.status(404).json('Bad request');
+      next(err)
     }
-    return res.json(roomUpdated);
   }
 }

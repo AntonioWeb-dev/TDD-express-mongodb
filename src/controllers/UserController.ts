@@ -1,10 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
-import { IUser } from '../interfaces/IUser/user.interface';
-import { IUserService } from '../interfaces/IUser/userService.interface';
 import { SendEmail } from '../aws/services/SES/Ses.send-email';
 import { GetTemplates } from '../utils/GetPath';
-import { IS3Service } from '../interfaces/s3.interface';
+import { UploadImage } from '../aws/services/S3/uploadImage';
+import { deleteImage } from '../aws/services/S3/deleteImage';
+import MulterConfig from '../utils/Multer';
 
+import { IUserService } from '../interfaces/IUser/userService.interface';
+import { IUser } from '../interfaces/IUser/user.interface';
+import { IS3Service } from '../interfaces/s3.interface';
 /**
  * @class UserController
  * @desc Responsible to handle with requests meda to API - endpoint: /users
@@ -48,8 +51,8 @@ export class UserController {
 
     let avatarURL: string | undefined;
     let newUser: IUser;
-    if (file) {
-      avatarURL = await this.S3.saveFile(file.filename)
+    if (file != null) {
+      avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename)
     }
     try {
       newUser = await this.userService.create({ name, email, age, avatar: avatarURL })
@@ -57,6 +60,7 @@ export class UserController {
       const template = await GetTemplates('CreateAcount');
       const emailService = new SendEmail("Conta criada", template);
       emailService.send([newUser.email])
+
       return res.json(newUser);
     } catch (err) {
       next(err);
@@ -68,6 +72,9 @@ export class UserController {
     let isDeleted;
     try {
       isDeleted = await this.userService.delete(id);
+      if (isDeleted.avatar) {
+        await deleteImage(this.S3, isDeleted.avatar)
+      }
     } catch (err) {
       next(err);
     }

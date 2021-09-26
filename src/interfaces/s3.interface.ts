@@ -1,7 +1,11 @@
-import { ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-ses';
+import { DeleteObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { ServiceOutputTypes } from '@aws-sdk/client-ses';
+
+type S3Command =
+  PutObjectCommand |
+  DeleteObjectCommand
+
 
 export interface IS3Service {
-  s3Client: ServiceInputTypes | ServiceOutputTypes;
-  directory: string;
-  saveFile(filename: string): Promise<string>;
+  send(putObject: S3Command): Promise<ServiceOutputTypes>;
 }

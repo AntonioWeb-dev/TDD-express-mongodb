@@ -10,10 +10,11 @@ describe('Test rooms routes ', () => {
     connection = await mongoose.connect(`${process.env.DB_URI}`);
   });
   let roomId: string;
-  it('should POST an user route POST-/rooms', async () => {
+  // An user should be created before to use's id in this test
+  test('should POST an user route POST-/rooms', async () => {
     const res = await request(app)
       .post('/rooms')
-      .set({ ownerid: '6137eb4ae97c49abe7baa1ea' })
+      .set({ ownerid: '6150e530d7ba43eda48a45a5' })
       .send({
         maxConnections: 5,
         name: 'Sala de fisica',
@@ -22,13 +23,13 @@ describe('Test rooms routes ', () => {
     roomId = res.body._id;
   });
 
-  it('should get rooms route GET-/rooms', async () => {
+  test('should get rooms route GET-/rooms', async () => {
     const res = await request(app)
       .get('/rooms')
     expect(res.status).toBe(200);
   });
 
-  it('should update rooms name PUT-/rooms/:id', async () => {
+  test('should update rooms name PUT-/rooms/:id', async () => {
     const res = await request(app)
       .put(`/rooms/${roomId}`)
       .send({
@@ -36,7 +37,7 @@ describe('Test rooms routes ', () => {
       })
     expect(res.body.maxConnections).toBe(3);
   });
-  it('should delete an user name DELETE-/rooms/:id', async () => {
+  test('should delete an user name DELETE-/rooms/:id', async () => {
     const res = await request(app)
       .delete(`/rooms/${roomId}`)
     expect(res.body._id).toBe(roomId);
