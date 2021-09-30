@@ -10,6 +10,7 @@ export class RoomController {
     this.show = this.show.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.newMember = this.newMember.bind(this);
   }
 
   async index(req: Request, res: Response, next: NextFunction) {
@@ -38,7 +39,15 @@ export class RoomController {
     const { maxConnections, name } = req.body;
     let newRoom = {};
     try {
-      newRoom = await this.roomService.create({ maxConnections, ownerId, name });
+      const members = [ownerId]
+      const admins = [ownerId]
+      newRoom = await this.roomService.create({
+        maxConnections,
+        ownerId,
+        name,
+        members,
+        admins,
+      });
       return res.json(newRoom);
     } catch (err: any) {
       next(err)
@@ -62,6 +71,17 @@ export class RoomController {
     try {
       roomUpdated = await this.roomService.update(id, body);
       return res.json(roomUpdated);
+    } catch (err) {
+      next(err)
+    }
+  }
+  async newMember(req: Request, res: Response, next: NextFunction) {
+    const { roomID } = req.params
+    const { userID } = req.body;
+    console.log("ola")
+    try {
+      const room = await this.roomService.addMember(userID, roomID)
+      return res.json(room)
     } catch (err) {
       next(err)
     }

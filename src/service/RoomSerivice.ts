@@ -35,7 +35,7 @@ export class RoomService implements IRoomService {
   * @desc Responsible to create a room
   **/
   async create(room: IRoom): Promise<any> {
-    const { ownerId, maxConnections, name } = room;
+    const { ownerId, maxConnections, name, members, admins } = room;
     const userService = new UserService();
 
     // check if user exist
@@ -46,13 +46,28 @@ export class RoomService implements IRoomService {
     if (roomAlreadyExist) {
       throw new CustomError('Room already exist', 400);
     }
-    const newRoom = new RoomModel({ ownerId, maxConnections, name });
+    const newRoom = new RoomModel({ ownerId, maxConnections, name, members, admins });
     try {
       await newRoom.save();
     } catch (err) {
       throw new CustomError('Internal error server', 500);
     }
     return newRoom;
+  }
+
+  async addMember(userID: string, roomID: string): Promise<IRoom> {
+    // check if the room exist
+    const room = await RoomModel.findOne({ _id: roomID });
+    if (!room) {
+      throw new CustomError('Room not exist', 404);
+    }
+    room.members.push(userID)
+    try {
+      await RoomModel.findOneAndUpdate({ _id: roomID }, room);
+    } catch (err) {
+      throw new CustomError('Internal error Server', 500);
+    }
+    return room;
   }
 
   /**
@@ -82,6 +97,11 @@ export class RoomService implements IRoomService {
       throw new CustomError('Internal error server', 500);
     }
     return isDeleted;
+  }
+
+  async findRoomByMemberID(userID: string): Promise<IRoom[]> {
+    const rooms = await RoomModel.find({ members: userID });
+    return rooms;
   }
 
 }

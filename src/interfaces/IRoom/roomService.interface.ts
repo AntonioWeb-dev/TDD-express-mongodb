@@ -5,4 +5,6 @@ export interface IRoomService {
   index(): Promise<IRoom[]>;
   update(id: string, data: IRoom): Promise<IRoom>;
   delete(id: string): Promise<IRoom>;
+  addMember(userID: string, roomID: string): Promise<IRoom>
+  findRoomByMemberID(userID: string): Promise<IRoom[]>
 }
