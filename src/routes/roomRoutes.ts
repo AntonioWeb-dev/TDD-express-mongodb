@@ -10,6 +10,8 @@ routes.get('/rooms/:id', roomController.show);
 routes.post('/rooms', roomController.create);
 routes.delete('/rooms/:id', roomController.delete);
 routes.put('/rooms/:id', roomController.update);
+routes.put('/rooms/newMember/:roomID', roomController.newMember);
+
 
 
 

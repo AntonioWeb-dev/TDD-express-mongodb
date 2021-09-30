@@ -10,6 +10,12 @@ const roomSchema = new Schema<IRoom>({
     type: String,
     required: true,
   },
+  admins: [{
+    type: String,
+  }],
+  members: [{
+    type: String,
+  }],
   maxConnections: {
     type: Number,
     default: 0,

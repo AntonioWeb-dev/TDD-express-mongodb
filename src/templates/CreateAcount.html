@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      html,
+      body,
+      * {
+        padding: 0px;
+        margin: 0px;
+      }
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 60vh;
+        background: rgb(243, 243, 243);
+      }
+      .email-body {
+        width: 100%;
+        padding: 15px;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+        background: white;
+        text-align: center;
+      }
+      .email-body h3 {
+        font-size: 24px;
+      }
+      .email-body p {
+        color: rgb(70, 65, 65);
+        font-family: "Times New Roman", Times, serif;
+        padding: 20px;
+      }
+      .callout {
+        background-color: rgba(36, 176, 241, 0.2);
+        font-weight: bold;
+      }
+    </style>
+    <title>Email</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="email-body">
+        <h3>Bem-vindo ao projeto Express-TDD-MongoDB</h3>
+        <p class="lead">
+          Este é um projeto feito para por em pratica alguns dos conhecimentos
+          que venho adiquirindo ao longo dos meses.
+        </p>
+        <hr />
+        <p>
+          Conta criada com sucesso. O projeto é para demostrar testes de
+          integração e unitarios.
+        </p>
+        <!-- Callout Panel -->
+        <p class="callout">
+          Não se esqueça de voltar e deixar uma estrela no repositorio.
+          <a href="https://github.com/AntonioWeb-dev/TDD-express-mongodb"
+            >Repósitorio! &raquo;</a
+          >
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -33,6 +33,7 @@ export class UserService implements IUserService {
   /**
   * @function create
   * @desc Responsible to create an user
+  * The data must be send with form-data
   **/
   async create(user: IUser): Promise<any> {
     const { email, name, age } = user;
@@ -46,7 +47,7 @@ export class UserService implements IUserService {
     if (userAlreadyExist[0]) {
       throw new CustomError('User already exist', 400);
     }
-    const newUser = new UserModel({ name, email, age });
+    const newUser = new UserModel({ name, email, age, avatar: user.avatar });
     try {
       await newUser.save();
     } catch (err) {

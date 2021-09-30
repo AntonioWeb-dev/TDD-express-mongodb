@@ -1,16 +1,25 @@
-import { Request, Response } from 'express';
-import { IUserService } from '../interfaces/IUser/userService.interface';
+import { NextFunction, Request, Response } from 'express';
+import { SendEmail } from '../aws/services/SES/Ses.send-email';
+import { GetTemplates } from '../utils/GetPath';
+import { UploadImage } from '../aws/services/S3/uploadImage';
+import { deleteImage } from '../aws/services/S3/deleteImage';
+import MulterConfig from '../utils/Multer';
 
+import { IUserService } from '../interfaces/IUser/userService.interface';
+import { IUser } from '../interfaces/IUser/user.interface';
+import { IS3Service } from '../interfaces/s3.interface';
 /**
  * @class UserController
- * @desc Responsável por lidar com solicitações de API para a rota /users
+ * @desc Responsible to handle with requests meda to API - endpoint: /users
  **/
 
 export class UserController {
   private userService: IUserService;
+  private S3: IS3Service;
 
-  constructor(userService: IUserService) {
+  constructor(userService: IUserService, S3: IS3Service) {
     this.userService = userService;
+    this.S3 = S3;
     this.create = this.create.bind(this);
     this.index = this.index.bind(this);
     this.show = this.show.bind(this);
@@ -18,44 +27,66 @@ export class UserController {
     this.update = this.update.bind(this);
   }
 
-  async index(req: Request, res: Response) {
-    const users = await this.userService.index();
-    return res.json(users);
-  }
-
-  async show(req: Request, res: Response) {
-    const user = await this.userService.show(req.params.id);
-    return res.json(user);
-  }
-
-  async create(req: Request, res: Response) {
-    const { name, email, age } = req.body;
-    let newUser = {};
+  async index(req: Request, res: Response, next: NextFunction) {
     try {
-      newUser = await this.userService.create({ name, email, age })
-    } catch (err: any) {
-      return res.status(err.status).json(err.message);
+      const users = await this.userService.index();
+      return res.json(users);
+    } catch (err) {
+      next(err)
     }
-    return res.json(newUser);
   }
 
-  async delete(req: Request, res: Response) {
+  async show(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = await this.userService.show(req.params.id);
+      return res.json(user);
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  async create(req: Request, res: Response, next: NextFunction) {
+    const { name, email, age } = JSON.parse(req.body['body']);
+    const file = req.file;
+
+    let avatarURL: string | undefined;
+    let newUser: IUser;
+    if (file != null) {
+      avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename)
+    }
+    try {
+      newUser = await this.userService.create({ name, email, age, avatar: avatarURL })
+      // Get template html, params is the file's name without *.html
+      const template = await GetTemplates('CreateAcount');
+      const emailService = new SendEmail("Conta criada", template);
+      emailService.send([newUser.email])
+
+      return res.json(newUser);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     let isDeleted;
     try {
       isDeleted = await this.userService.delete(id);
-    } catch (err: any) {
-      return res.status(err.status).json(err.message);
+      if (isDeleted.avatar) {
+        await deleteImage(this.S3, isDeleted.avatar)
+      }
+    } catch (err) {
+      next(err);
     }
     return res.json(isDeleted);
   }
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     let userUpdated;
     try {
       userUpdated = await this.userService.update(id, req.body);
-    } catch (err: any) {
-      return res.status(err.status).json(err.message);
+    } catch (err) {
+      next(err);
     }
     return res.json(userUpdated);
   }
