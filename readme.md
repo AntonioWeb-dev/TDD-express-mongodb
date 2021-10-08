@@ -18,5 +18,3 @@ Endpoint | HTTP Methods
 Websockets  Client-Events:
 * send-message
 * recive-message
-
-<h3>How to connect to chat</h3>
