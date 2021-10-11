@@ -46,7 +46,7 @@ export class UserController {
   }
 
   async create(req: Request, res: Response, next: NextFunction) {
-    const { name, email, age } = JSON.parse(req.body['body']);
+    const { name, email, age, password } = JSON.parse(req.body['body']);
     const file = req.file;
 
     let avatarURL: string | undefined;
@@ -55,7 +55,7 @@ export class UserController {
       avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename)
     }
     try {
-      newUser = await this.userService.create({ name, email, age, avatar: avatarURL })
+      newUser = await this.userService.create({ name, email, age, avatar: avatarURL, password })
       // Get template html, params is the file's name without *.html
       const template = await GetTemplates('CreateAcount');
       const emailService = new SendEmail("Conta criada", template);
@@ -72,7 +72,7 @@ export class UserController {
     let isDeleted;
     try {
       isDeleted = await this.userService.delete(id);
-      if (isDeleted.avatar) {
+      if (isDeleted.avatar && isDeleted.avatar !== "undefined") {
         await deleteImage(this.S3, isDeleted.avatar)
       }
     } catch (err) {

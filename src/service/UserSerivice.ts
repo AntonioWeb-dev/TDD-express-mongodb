@@ -1,6 +1,8 @@
 import validator from 'validator';
+import argon2 from 'argon2';
 import UserModel from '../models/User';
 import CustomError from '../utils/CustomError';
+
 import { IUserService } from '../interfaces/IUser/userService.interface';
 import { IUser } from '../interfaces/IUser/user.interface';
 
@@ -29,25 +31,25 @@ export class UserService implements IUserService {
     }
     return user;
   }
-
   /**
   * @function create
   * @desc Responsible to create an user
   * The data must be send with form-data
   **/
   async create(user: IUser): Promise<any> {
-    const { email, name, age } = user;
+    const { email, name, age, password } = user;
 
     // check if the params are valid
     UserService.emailValidation(email);
     UserService.nameValidation(name);
     UserService.ageValidation(age);
+    const passwordHash = await UserService.passwordHash(password)
 
     const userAlreadyExist = await UserModel.find({ email });
     if (userAlreadyExist[0]) {
       throw new CustomError('User already exist', 400);
     }
-    const newUser = new UserModel({ name, email, age, avatar: user.avatar });
+    const newUser = new UserModel({ name, email, age, avatar: user.avatar, password: passwordHash });
     try {
       await newUser.save();
     } catch (err) {
@@ -93,6 +95,15 @@ export class UserService implements IUserService {
     return isDeleted;
   }
 
+  async findByEmail(email: string): Promise<IUser> {
+    UserService.emailValidation(email);
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      throw new CustomError('User not found', 404);
+    }
+    return user;
+  }
+
   // ========== validations ==========
 
   // function to validade Email
@@ -100,7 +111,6 @@ export class UserService implements IUserService {
     if (!validator.isEmail(email)) {
       throw new CustomError('Email is not valid', 400);
     }
-
   }
 
   // function to validate user's name
@@ -117,5 +127,13 @@ export class UserService implements IUserService {
     if (!age || age <= 0) {
       throw new CustomError('Age it is not valid', 400);
     }
+  }
+
+  static async passwordHash(password: string) {
+    if (password.length < 8) {
+      throw new CustomError('Passowrd is too short', 400);
+    }
+    const passwordHash = await argon2.hash(password);
+    return passwordHash;
   }
 }

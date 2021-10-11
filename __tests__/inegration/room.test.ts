@@ -14,10 +14,10 @@ describe('Test rooms routes ', () => {
   test('should POST an user route POST-/rooms', async () => {
     const res = await request(app)
       .post('/rooms')
-      .set({ ownerid: '6150e530d7ba43eda48a45a5' })
+      .set({ ownerid: '61561b51ef29d3146c1a068b' })
       .send({
         maxConnections: 5,
-        name: 'Sala de fisica',
+        name: 'Sala de test',
       });
     expect(res.body.maxConnections).toBe(5);
     roomId = res.body._id;

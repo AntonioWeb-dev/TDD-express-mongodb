@@ -37,11 +37,10 @@ export class RoomController {
       return res.status(400).json('Missing ownerId');
     }
     const { maxConnections, name } = req.body;
-    let newRoom = {};
     try {
       const members = [ownerId]
       const admins = [ownerId]
-      newRoom = await this.roomService.create({
+      const newRoom = await this.roomService.create({
         maxConnections,
         ownerId,
         name,

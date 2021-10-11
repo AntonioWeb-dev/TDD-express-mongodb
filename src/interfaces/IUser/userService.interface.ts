@@ -5,4 +5,5 @@ export interface IUserService {
   index(): Promise<IUser[]>;
   update(id: string, data: IUser): Promise<IUser>;
   delete(id: string): Promise<IUser>;
+  findByEmail(email: string): Promise<IUser>;
 }

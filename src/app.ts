@@ -9,9 +9,7 @@ import userRouter from './routes/userRoutes';
 import roomRouter from './routes/roomRoutes';
 import { errorHandler } from './middleware/errorHandle';
 import { verifyUserID } from './websockets/middlewares/verifyUserID';
-import { handlerEvents } from './websockets/handler/handlerEvents';
-
-
+import { handlerEventsWhenConnected } from './websockets/handler/handlerEventsWhenConnected';
 
 
 class App {
@@ -19,21 +17,26 @@ class App {
   constructor() {
     this.app = express();
     this.configs();
-    this.routes();
     this.middlewares();
+    this.routes();
+    this.errorsHandler();
   }
 
   webSockets(httpsServer: http.Server) {
     const io = new Server(httpsServer)
     io.use(verifyUserID)
-    io.on("connect", handlerEvents)
+    io.on("connect", handlerEventsWhenConnected)
 
   }
   configs() {
     this.app.use(express.json());
   }
   middlewares() {
+    this.app.use(express.json())
+  }
+  errorsHandler() {
     this.app.use(errorHandler)
+
   }
 
   routes() {

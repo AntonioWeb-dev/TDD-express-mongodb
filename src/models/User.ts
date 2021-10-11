@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-import validator from 'validator';
 import { IUser } from '../interfaces/IUser/user.interface';
 
 const userSchema = new Schema<IUser>({
@@ -11,6 +10,10 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
     unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
   },
   age: {
     type: Number,
