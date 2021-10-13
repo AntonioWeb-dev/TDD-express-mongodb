@@ -32,7 +32,7 @@ export class RoomController {
   }
 
   async create(req: Request, res: Response, next: NextFunction) {
-    const ownerId = req.headers['ownerid'];
+    const ownerId = req.user_id;
     if (typeof ownerId !== 'string') {
       return res.status(400).json('Missing ownerId');
     }
@@ -77,7 +77,6 @@ export class RoomController {
   async newMember(req: Request, res: Response, next: NextFunction) {
     const { roomID } = req.params
     const { userID } = req.body;
-    console.log("ola")
     try {
       const room = await this.roomService.addMember(userID, roomID)
       return res.json(room)

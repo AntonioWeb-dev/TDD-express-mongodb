@@ -26,7 +26,7 @@ describe("#Test Authentication service", () => {
 
   test("#Should verify a jsonwebtoken", () => {
     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNTYxYjUxZWYyOWQzMTQ2YzFhMDY4YiIsImVtYWlsIjoidGVzdCIsIm5hbWUiOiJ0ZXN0In0.0Ia5UylkoTVeMG7BpLU7Jm9EQAq6ME7nJiwr6FdW9fQ"
-    const tokenVerifed = authenticationService.verifyToken(token);
+    const tokenVerifed = AuthenticationService.verifyToken(token);
     expect(tokenVerifed).toBe("61561b51ef29d3146c1a068b")
 
   });

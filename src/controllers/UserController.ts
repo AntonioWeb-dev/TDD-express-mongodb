@@ -37,6 +37,9 @@ export class UserController {
   }
 
   async show(req: Request, res: Response, next: NextFunction) {
+    if (req.params.id === req.user_id) {
+      return res.status(403).json({});
+    }
     try {
       const user = await this.userService.show(req.params.id);
       return res.json(user);
@@ -69,6 +72,9 @@ export class UserController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
+    if (id !== req.user_id) {
+      return res.status(403).json({});
+    }
     let isDeleted;
     try {
       isDeleted = await this.userService.delete(id);
@@ -82,6 +88,9 @@ export class UserController {
   }
   async update(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
+    if (id !== req.user_id) {
+      return res.status(403).json({});
+    }
     let userUpdated;
     try {
       userUpdated = await this.userService.update(id, req.body);

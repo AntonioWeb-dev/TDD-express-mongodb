@@ -2,9 +2,10 @@ import jwt from "jsonwebtoken";
 import argon from "argon2";
 import { IUserService } from '../interfaces/IUser/userService.interface';
 import CustomError from '../utils/CustomError';
+import { IAuthenticationService } from '../interfaces/IAuthentication/authenticationService.interface';
 
 
-export class AuthenticationService {
+export class AuthenticationService implements IAuthenticationService {
   private userService: IUserService;
   private secretKey: string;
   constructor(userService: IUserService) {
@@ -23,9 +24,9 @@ export class AuthenticationService {
     return token;
   }
 
-  verifyToken(token: string) {
+  static verifyToken(token: string) {
     try {
-      const decode = jwt.verify(token, this.secretKey);
+      const decode = jwt.verify(token, process.env.JWT_SECRET || "undefined");
       const { id }: string | any = decode;
       return id;
     } catch (err) {
