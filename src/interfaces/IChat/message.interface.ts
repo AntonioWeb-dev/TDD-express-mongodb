@@ -1,6 +1,10 @@
+import { IUser } from "../IUser/user.interface";
+
 export interface IMessage {
-  message_id: string;
+  _id?: string;
   content: string;
-  sender: string;
-  room: string;
+  sender: IUser;
+  room_id: string;
+  isResponse: boolean;
+  created_at: Date;
 }
