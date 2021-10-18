@@ -1,10 +1,15 @@
-import { IUser } from "../IUser/user.interface";
+export type TSender = {
+  name: String,
+  email: String,
+  avatar: String | undefined,
+  id: String,
+}
 
 export interface IMessage {
   _id?: string;
   content: string;
-  sender: IUser;
+  sender: TSender;
   room_id: string;
   isResponse: boolean;
-  created_at: Date;
+  date: Date;
 }

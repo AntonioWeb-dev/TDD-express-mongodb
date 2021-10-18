@@ -3,7 +3,6 @@ import { Server } from 'socket.io'
 import cors from "cors";
 import dotenv from 'dotenv';
 import http from 'http'
-import { v4 } from 'uuid';
 
 dotenv.config()
 import './database';

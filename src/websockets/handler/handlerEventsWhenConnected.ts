@@ -1,6 +1,10 @@
-import { IMessage } from '../../interfaces/IChat/message.interface';
 import { ISocket } from '../../interfaces/socket.interface';
+import MessageModel from '../../models/Message';
+import { MessageRepository } from '../../repositories/MessageRepository';
+import { MessageService } from '../../service/MessageService';
 import { RoomService } from '../../service/RoomSerivice';
+import { roomMessages } from './room';
+import { sendMessage } from './sendMessage';
 
 // joinRomm - make the join with the rooms from database
 async function joinRoom(socket: ISocket, userID: string) {
@@ -22,16 +26,19 @@ async function joinRoom(socket: ISocket, userID: string) {
 export function handlerEventsWhenConnected(io: any) {
 
   io.on('connect', async (socket: ISocket) => {
+    const messageRepository = new MessageRepository(MessageModel);
+    const messageService = new MessageService(messageRepository);
 
     let rooms: any[] = []
     if (socket.userID) {
-      rooms = await joinRoom(socket, socket.userID)
+      rooms = await joinRoom(socket, socket.userID);
     }
     socket.emit('yourRooms', rooms);
 
-    socket.on("send-message", (message: IMessage) => {
-      socket.to(message.room).emit("recive-message", message)
-    })
+
+    roomMessages(socket, messageService);
+    sendMessage(socket, messageService);
+
   })
 
 }
