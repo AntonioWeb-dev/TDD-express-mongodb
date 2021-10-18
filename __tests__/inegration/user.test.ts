@@ -10,7 +10,7 @@ describe('Test users routes ', () => {
     connection = await mongoose.connect(`${process.env.DB_URI}`);
   });
   let userId: string;
-  it('should POST an user route POST-/users', async () => {
+  test('should POST an user route POST-/users', async () => {
     const res = await request(app)
       .post('/users')
       .send({
@@ -18,19 +18,20 @@ describe('Test users routes ', () => {
           name: 'UserTest',
           email: 'test@gmail.com',
           age: 56,
+          password: "12345678"
         })
       });
     expect(res.body.email).toBe('test@gmail.com');
     userId = res.body._id;
   });
 
-  it('should get users route GET-/users', async () => {
+  test('should get users route GET-/users', async () => {
     const res = await request(app)
       .get('/users')
     expect(res.status).toBe(200);
   });
 
-  it('should update users name PUT-/users/:id', async () => {
+  test('should update users name PUT-/users/:id', async () => {
     const res = await request(app)
       .put(`/users/${userId}`)
       .send({
@@ -38,7 +39,7 @@ describe('Test users routes ', () => {
       })
     expect(res.body.name).toBe('tryUpdate');
   });
-  it('should delete an user name DELETE-/users/:id', async () => {
+  test('should delete an user name DELETE-/users/:id', async () => {
     const res = await request(app)
       .delete(`/users/${userId}`)
     expect(res.body._id).toBe(userId);

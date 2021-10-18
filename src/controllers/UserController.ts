@@ -37,6 +37,9 @@ export class UserController {
   }
 
   async show(req: Request, res: Response, next: NextFunction) {
+    if (req.params.id === req.user_id) {
+      return res.status(403).json({});
+    }
     try {
       const user = await this.userService.show(req.params.id);
       return res.json(user);
@@ -46,7 +49,7 @@ export class UserController {
   }
 
   async create(req: Request, res: Response, next: NextFunction) {
-    const { name, email, age } = JSON.parse(req.body['body']);
+    const { name, email, age, password } = JSON.parse(req.body['body']);
     const file = req.file;
 
     let avatarURL: string | undefined;
@@ -55,7 +58,7 @@ export class UserController {
       avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename)
     }
     try {
-      newUser = await this.userService.create({ name, email, age, avatar: avatarURL })
+      newUser = await this.userService.create({ name, email, age, avatar: avatarURL, password })
       // Get template html, params is the file's name without *.html
       const template = await GetTemplates('CreateAcount');
       const emailService = new SendEmail("Conta criada", template);
@@ -69,10 +72,13 @@ export class UserController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
+    // if (id !== req.user_id) {
+    //   return res.status(403).json({});
+    // }
     let isDeleted;
     try {
       isDeleted = await this.userService.delete(id);
-      if (isDeleted.avatar) {
+      if (isDeleted.avatar && isDeleted.avatar !== "undefined") {
         await deleteImage(this.S3, isDeleted.avatar)
       }
     } catch (err) {
@@ -82,6 +88,9 @@ export class UserController {
   }
   async update(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
+    if (id !== req.user_id) {
+      return res.status(403).json({});
+    }
     let userUpdated;
     try {
       userUpdated = await this.userService.update(id, req.body);

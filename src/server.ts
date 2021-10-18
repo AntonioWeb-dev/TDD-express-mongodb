@@ -10,4 +10,4 @@ const credentials = { key: privateKey, cert: certificateKey };
 const server = http.createServer(App.app);
 App.webSockets(server)
 
-server.listen(3000);
+server.listen(3100);

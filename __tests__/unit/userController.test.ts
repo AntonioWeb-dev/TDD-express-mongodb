@@ -15,7 +15,8 @@ describe("Testing errors handler", () => {
     body: {
       name: "antonio",
       email: "example@gmail.com",
-      age: "12345678"
+      age: "12",
+      password: "12345678"
     },
     file: null
   } as any as Request;
@@ -28,6 +29,8 @@ describe("Testing errors handler", () => {
     update: jest.fn(),
     delete: jest.fn(),
     index: jest.fn(),
+    findByEmail: jest.fn(),
+
   }
   test("Should return a error with status 500", () => {
     jest.spyOn(userServiceMock, 'index')
@@ -47,7 +50,8 @@ describe("Testing errors handler", () => {
         "body": JSON.stringify({
           name: "antonio",
           email: "example@gmail.com",
-          age: "12345678"
+          age: "12345678",
+          password: "12345678"
         })
       },
       file: null

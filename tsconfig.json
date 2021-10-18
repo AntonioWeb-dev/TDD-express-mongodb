@@ -4,6 +4,7 @@
     "target": "es5",
     "module": "commonjs",
     "esModuleInterop": true,
+    "typeRoots": ["./src/@types"],
     "forceConsistentCasingInFileNames": true,
     "strict": true
   },

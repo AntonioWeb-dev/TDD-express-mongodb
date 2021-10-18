@@ -11,7 +11,6 @@ export async function deleteImage(s3Client: IS3Service, filename: string) {
   }
   try {
     const data = await s3Client.send(new DeleteObjectCommand(bucketParams));
-    console.log(data)
     return data;
   } catch (err) {
     throw err
