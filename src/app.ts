@@ -1,7 +1,10 @@
 import express from 'express';
 import { Server } from 'socket.io'
+import cors from "cors";
 import dotenv from 'dotenv';
 import http from 'http'
+import { v4 } from 'uuid';
+
 dotenv.config()
 import './database';
 
@@ -23,16 +26,20 @@ class App {
   }
 
   webSockets(httpsServer: http.Server) {
-    const io = new Server(httpsServer)
+    const io = new Server(httpsServer, {
+      cors: {
+        origin: '*'
+      }
+    })
     io.use(verifyUserID)
-    io.on("connect", handlerEventsWhenConnected)
-
+    handlerEventsWhenConnected(io);
   }
   configs() {
     this.app.use(express.json());
   }
   middlewares() {
-    this.app.use(express.json())
+    this.app.use(express.json());
+    this.app.use(cors());
   }
   errorsHandler() {
     this.app.use(errorHandler)

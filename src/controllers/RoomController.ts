@@ -33,9 +33,6 @@ export class RoomController {
 
   async create(req: Request, res: Response, next: NextFunction) {
     const ownerId = req.user_id;
-    if (typeof ownerId !== 'string') {
-      return res.status(400).json('Missing ownerId');
-    }
     const { maxConnections, name } = req.body;
     try {
       const members = [ownerId]

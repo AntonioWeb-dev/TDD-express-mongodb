@@ -72,9 +72,9 @@ export class UserController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
-    if (id !== req.user_id) {
-      return res.status(403).json({});
-    }
+    // if (id !== req.user_id) {
+    //   return res.status(403).json({});
+    // }
     let isDeleted;
     try {
       isDeleted = await this.userService.delete(id);

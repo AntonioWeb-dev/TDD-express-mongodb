@@ -15,15 +15,23 @@ async function joinRoom(socket: ISocket, userID: string) {
       socket.join(room.toString())
     }
   }
+  return rooms;
 }
 
 // handlerEventsWhenConnected - All logic when the client connect should be in this function
-export async function handlerEventsWhenConnected(socket: ISocket) {
-  if (socket.userID) {
-    await joinRoom(socket, socket.userID)
-  }
+export function handlerEventsWhenConnected(io: any) {
 
-  socket.on("send-message", (message: IMessage) => {
-    socket.to(message.room).emit("recive-message", message)
+  io.on('connect', async (socket: ISocket) => {
+
+    let rooms: any[] = []
+    if (socket.userID) {
+      rooms = await joinRoom(socket, socket.userID)
+    }
+    socket.emit('yourRooms', rooms);
+
+    socket.on("send-message", (message: IMessage) => {
+      socket.to(message.room).emit("recive-message", message)
+    })
   })
+
 }
