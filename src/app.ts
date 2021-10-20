@@ -9,6 +9,7 @@ import './database';
 
 import userRouter from './routes/userRoutes';
 import roomRouter from './routes/roomRoutes';
+import messageRouter from './routes/messageRoutes';
 import { errorHandler } from './middleware/errorHandle';
 import { verifyUserID } from './websockets/middlewares/verifyUserID';
 import { handlerEventsWhenConnected } from './websockets/handler/handlerEventsWhenConnected';
@@ -44,10 +45,10 @@ class App {
     this.app.use(errorHandler)
 
   }
-
   routes() {
     this.app.use(userRouter);
     this.app.use(roomRouter);
+    this.app.use(messageRouter);
   }
 }
 

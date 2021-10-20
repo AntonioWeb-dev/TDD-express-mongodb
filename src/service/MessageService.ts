@@ -16,7 +16,11 @@ export class MessageService implements IMessageService {
   }
 
   async findByRoom(room_id: string) {
-    const messages = await this.messageRepository.find({ room_id });
+    const messages = await this.messageRepository.find({ room_id })
+      .catch((err) => {
+        console.log(err);
+        return [];
+      })
     return messages;
   }
 

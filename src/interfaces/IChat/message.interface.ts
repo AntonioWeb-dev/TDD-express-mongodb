@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 export type TSender = {
   name: String,
   email: String,
@@ -6,7 +8,7 @@ export type TSender = {
 }
 
 export interface IMessage {
-  _id?: string;
+  _id?: mongoose.Types.ObjectId;
   content: string;
   sender: TSender;
   room_id: string;
