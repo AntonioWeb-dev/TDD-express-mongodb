@@ -82,10 +82,17 @@ export class UserService implements IUserService {
     return userUpdated;
   }
 
-  /**
-  * @function delete
-  * @desc Delete a user by id
-  **/
+  async updateAvatar(id: string, urlS3: string): Promise<IUser> {
+    console.log(urlS3);
+    await UserModel.findOneAndUpdate({ _id: id }, { avatar: urlS3 });
+    const userUpdated = await UserModel.findOne({ _id: id });
+    if (!userUpdated) {
+      throw new CustomError('Internal error server', 500);
+    }
+    return userUpdated;
+  }
+
+  // Remove user from database
   async delete(id: string): Promise<IUser> {
     const isDeleted = this.show(id);
     await UserModel.deleteOne({ _id: id });

@@ -19,7 +19,7 @@ export function authorization(req: Request, res: Response, next: NextFunction) {
 
 function verifyToken(token: string) {
   try {
-    const decode = jwt.verify(token, process.env.JWT_SECRET || "undefined");
+    const decode = jwt.verify(token, process.env.JWT_SECRET || "simpleSecret");
     const { id }: string | any = decode;
     return id;
   } catch (err) {

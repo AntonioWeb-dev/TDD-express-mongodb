@@ -25,6 +25,7 @@ export class UserController {
     this.show = this.show.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.updateImage = this.updateImage.bind(this);
   }
 
   async index(req: Request, res: Response, next: NextFunction) {
@@ -67,6 +68,20 @@ export class UserController {
       return res.json(newUser);
     } catch (err) {
       next(err);
+    }
+  }
+
+  async updateImage(req: Request, res: Response, next: NextFunction) {
+    const file = req.file;
+    let avatarURL: string | undefined;
+    if (file != null) {
+      avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename)
+    }
+    try {
+      const user = await this.userService.updateAvatar(req.user_id, avatarURL)
+      return res.json(user);
+    } catch (err) {
+      next(err)
     }
   }
 
