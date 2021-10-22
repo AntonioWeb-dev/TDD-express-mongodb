@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
 import { IRoom } from '../interfaces/IRoom/room.interface';
 
 const roomSchema = new Schema<IRoom>({
@@ -16,6 +16,13 @@ const roomSchema = new Schema<IRoom>({
   members: [{
     type: String,
   }],
+  last_message: {
+    type: {
+      content: String,
+      date: Date,
+    },
+    default: {},
+  },
   maxConnections: {
     type: Number,
     default: 0,

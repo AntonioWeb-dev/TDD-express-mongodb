@@ -2,7 +2,7 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import path from 'path';
 import mime from 'mime';
 import fs from 'fs';
-import { IS3Service } from '../../../interfaces/s3.interface';
+import { IS3Service } from '../../../../interfaces/s3.interface';
 
 
 export async function UploadImage(s3Client: IS3Service, directory: string, filename: string) {

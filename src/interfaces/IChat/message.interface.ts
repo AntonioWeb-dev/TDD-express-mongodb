@@ -4,11 +4,11 @@ export type TSender = {
   name: String,
   email: String,
   avatar: String | undefined,
-  id: String,
+  _id: mongoose.Types.ObjectId,
 }
 
 export interface IMessage {
-  _id?: mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
   content: string;
   sender: TSender;
   room_id: string;

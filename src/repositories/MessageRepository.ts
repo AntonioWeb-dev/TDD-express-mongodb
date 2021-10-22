@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { IMessage } from "../interfaces/IChat/message.interface";
+import { IMessage, TSender } from "../interfaces/IChat/message.interface";
 import { IMessageRepository } from "../interfaces/IChat/messageRepository.interface";
 
 export class MessageRepository implements IMessageRepository {
@@ -31,5 +31,12 @@ export class MessageRepository implements IMessageRepository {
       },
     });
     return messages;
+  }
+
+  async updateSender(senderUpdated: TSender) {
+    await this.messageModel.updateMany({
+      "sender._id": senderUpdated._id
+    }, { "$set": { "sender": senderUpdated } });
+    return true;
   }
 }

@@ -1,5 +1,5 @@
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
-import { IS3Service } from '../../../interfaces/s3.interface';
+import { IS3Service } from '../../../../interfaces/s3.interface';
 
 export async function deleteImage(s3Client: IS3Service, filename: string) {
 

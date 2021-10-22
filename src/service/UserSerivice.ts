@@ -5,11 +5,14 @@ import CustomError from '../utils/CustomError';
 
 import { IUserService } from '../interfaces/IUser/userService.interface';
 import { IUser } from '../interfaces/IUser/user.interface';
+import { IMessageService } from '../interfaces/IChat/messageService.interface';
 
 
 export class UserService implements IUserService {
-
-  constructor() { }
+  private messageService: IMessageService;
+  constructor(messageService: IMessageService) {
+    this.messageService = messageService;
+  }
 
   /**
   * @function index
@@ -31,25 +34,21 @@ export class UserService implements IUserService {
     }
     return user;
   }
-  /**
-  * @function create
-  * @desc Responsible to create an user
-  * The data must be send with form-data
-  **/
+
+
   async create(user: IUser): Promise<any> {
-    const { email, name, age, password } = user;
+    const { email, name, password } = user;
 
     // check if the params are valid
     UserService.emailValidation(email);
     UserService.nameValidation(name);
-    UserService.ageValidation(age);
     const passwordHash = await UserService.passwordHash(password)
 
     const userAlreadyExist = await UserModel.find({ email });
     if (userAlreadyExist[0]) {
       throw new CustomError('User already exist', 400);
     }
-    const newUser = new UserModel({ name, email, age, avatar: user.avatar, password: passwordHash });
+    const newUser = new UserModel({ name, email, avatar: user.avatar, password: passwordHash });
     try {
       await newUser.save();
     } catch (err) {
@@ -63,15 +62,12 @@ export class UserService implements IUserService {
   * @desc Responsible to handle with user data update
   **/
   async update(id: string, data: IUser): Promise<IUser> {
-    const { email, name, age } = data;
+    const { email, name } = data;
     if (name) {
       UserService.nameValidation(name);
     }
     if (email) {
       UserService.nameValidation(name);
-    }
-    if (age) {
-      UserService.ageValidation(age);
     }
 
     await UserModel.findOneAndUpdate({ _id: id }, data);
@@ -83,12 +79,18 @@ export class UserService implements IUserService {
   }
 
   async updateAvatar(id: string, urlS3: string): Promise<IUser> {
-    console.log(urlS3);
     await UserModel.findOneAndUpdate({ _id: id }, { avatar: urlS3 });
     const userUpdated = await UserModel.findOne({ _id: id });
     if (!userUpdated) {
       throw new CustomError('Internal error server', 500);
     }
+    const sender = {
+      name: userUpdated.name,
+      email: userUpdated.email,
+      avatar: userUpdated.avatar,
+      _id: userUpdated._id,
+    }
+    await this.messageService.updateSender(sender);
     return userUpdated;
   }
 
@@ -126,13 +128,6 @@ export class UserService implements IUserService {
     const regExp = /\W|[0-9]/gi;
     if (regExp.test(name)) {
       throw new CustomError('Name invalid arguments', 400);
-    }
-  }
-
-  // function to validate user's age
-  static ageValidation(age: number) {
-    if (!age || age <= 0) {
-      throw new CustomError('Age it is not valid', 400);
     }
   }
 

@@ -60,6 +60,7 @@ export class RoomController {
       next(err)
     }
   }
+
   async update(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     const body = req.body;
@@ -71,6 +72,7 @@ export class RoomController {
       next(err)
     }
   }
+
   async newMember(req: Request, res: Response, next: NextFunction) {
     const { roomID } = req.params
     const { userID } = req.body;

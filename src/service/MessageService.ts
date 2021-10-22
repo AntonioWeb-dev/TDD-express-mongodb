@@ -1,6 +1,7 @@
-import { IMessage } from '../interfaces/IChat/message.interface';
+import { IMessage, TSender } from '../interfaces/IChat/message.interface';
 import { IMessageRepository } from "../interfaces/IChat/messageRepository.interface";
 import { IMessageService } from "../interfaces/IChat/messageService.interface";
+import CustomError from '../utils/CustomError';
 
 
 export class MessageService implements IMessageService {
@@ -37,5 +38,14 @@ export class MessageService implements IMessageService {
   async delete(id: string) {
     const messageRemoved = await this.messageRepository.delete(id);
     return messageRemoved;
+  }
+
+  async updateSender(sender: TSender) {
+    try {
+      await this.messageRepository.updateSender(sender);
+    } catch (err) {
+      console.log(err);
+      throw new CustomError('Server error', 500);
+    }
   }
 }

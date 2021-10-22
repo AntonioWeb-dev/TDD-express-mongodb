@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { SendEmail } from '../aws/services/SES/Ses.send-email';
+import { SendEmail } from '../infra/aws/services/SES/Ses.send-email';
 import { GetTemplates } from '../utils/GetPath';
-import { UploadImage } from '../aws/services/S3/uploadImage';
-import { deleteImage } from '../aws/services/S3/deleteImage';
+import { UploadImage } from '../infra/aws/services/S3/uploadImage';
+import { deleteImage } from '../infra/aws/services/S3/deleteImage';
 import MulterConfig from '../utils/Multer';
 
 import { IUserService } from '../interfaces/IUser/userService.interface';
@@ -50,7 +50,7 @@ export class UserController {
   }
 
   async create(req: Request, res: Response, next: NextFunction) {
-    const { name, email, age, password } = JSON.parse(req.body['body']);
+    const { name, email, password } = JSON.parse(req.body['body']);
     const file = req.file;
 
     let avatarURL: string | undefined;
@@ -59,7 +59,7 @@ export class UserController {
       avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename)
     }
     try {
-      newUser = await this.userService.create({ name, email, age, avatar: avatarURL, password })
+      newUser = await this.userService.create({ name, email, avatar: avatarURL, password })
       // Get template html, params is the file's name without *.html
       const template = await GetTemplates('CreateAcount');
       const emailService = new SendEmail("Conta criada", template);
@@ -67,6 +67,9 @@ export class UserController {
 
       return res.json(newUser);
     } catch (err) {
+      if (file != null && typeof (avatarURL) == 'string') {
+        await deleteImage(this.S3, avatarURL)
+      }
       next(err);
     }
   }
@@ -81,6 +84,9 @@ export class UserController {
       const user = await this.userService.updateAvatar(req.user_id, avatarURL)
       return res.json(user);
     } catch (err) {
+      if (file != null && typeof (avatarURL) == 'string') {
+        await deleteImage(this.S3, avatarURL)
+      }
       next(err)
     }
   }

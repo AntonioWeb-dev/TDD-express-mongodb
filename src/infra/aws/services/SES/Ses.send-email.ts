@@ -1,6 +1,6 @@
 import { sesClient } from '../../clients/SES-client';
 import { SendEmailCommand } from '@aws-sdk/client-ses';
-import CustomError from '../../../utils/CustomError';
+import CustomError from '../../../../utils/CustomError';
 
 export class SendEmail {
   constructor(private subject: string, private template: string) { }

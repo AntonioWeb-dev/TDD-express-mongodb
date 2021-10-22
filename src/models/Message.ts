@@ -12,7 +12,6 @@ const messageSchema = new Schema<IMessage>({
       name: String,
       email: String,
       avatar: String || undefined,
-      id: String,
     },
     required: true,
   },
@@ -24,9 +23,9 @@ const messageSchema = new Schema<IMessage>({
     type: Boolean,
     required: true,
   },
-}, {
-  timestamps: {
-    createdAt: true,
+  date: {
+    type: Date,
+    required: true,
   }
 });
 

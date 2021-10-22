@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import http from 'http'
 
 dotenv.config()
-import './database';
+import './infra/database';
 
 import userRouter from './routes/userRoutes';
 import roomRouter from './routes/roomRoutes';

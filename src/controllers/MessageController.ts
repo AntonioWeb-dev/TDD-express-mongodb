@@ -7,7 +7,6 @@ export class MessageController {
     this.messageService = messageService;
     this.getMessageByRoom = this.getMessageByRoom.bind(this);
   }
-
   async getMessageByRoom(req: Request, res: Response, next: NextFunction) {
     const { room_id } = req.params;
     try {
