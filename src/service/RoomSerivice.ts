@@ -3,11 +3,12 @@ import CustomError from '../utils/CustomError';
 import { IRoomService } from '../interfaces/IRoom/roomService.interface';
 import { IRoom } from '../interfaces/IRoom/room.interface';
 import { UserService } from './UserSerivice';
+import { IUserService } from '../interfaces/IUser/userService.interface';
 
 
 export class RoomService implements IRoomService {
 
-  constructor() { }
+  constructor(private userService: IUserService) { }
 
   /**
   * @function index
@@ -36,10 +37,9 @@ export class RoomService implements IRoomService {
   **/
   async create(room: IRoom): Promise<any> {
     const { ownerId, maxConnections, name, members, admins } = room;
-    const userService = new UserService();
 
     // check if user exist
-    await userService.show(ownerId);
+    await this.userService.show(ownerId);
 
     // check if the room already exist
     const roomAlreadyExist = await RoomModel.findOne({ ownerId, name });
@@ -84,6 +84,10 @@ export class RoomService implements IRoomService {
       throw new CustomError('Internal error server', 500);
     }
     return roomUpdated;
+  }
+
+  async updateLastMessage(id: string, message: { content: string, date: Date }) {
+    await RoomModel.findOneAndUpdate({ _id: id }, { last_message: message });
   }
 
   /**

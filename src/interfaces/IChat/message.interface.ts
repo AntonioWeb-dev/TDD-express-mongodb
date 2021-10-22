@@ -1,10 +1,17 @@
-import { IUser } from "../IUser/user.interface";
+import mongoose from 'mongoose';
+
+export type TSender = {
+  name: String,
+  email: String,
+  avatar: String | undefined,
+  _id: mongoose.Types.ObjectId,
+}
 
 export interface IMessage {
-  _id?: string;
+  _id: mongoose.Types.ObjectId;
   content: string;
-  sender: IUser;
+  sender: TSender;
   room_id: string;
   isResponse: boolean;
-  created_at: Date;
+  date: Date;
 }

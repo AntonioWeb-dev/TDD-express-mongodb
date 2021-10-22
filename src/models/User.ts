@@ -15,10 +15,6 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
   },
-  age: {
-    type: Number,
-    required: true
-  },
   avatar: {
     type: String,
     default: 'undefined'

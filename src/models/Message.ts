@@ -1,30 +1,33 @@
-import { Schema, Model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { IMessage } from '../interfaces/IChat/message.interface';
-import { IUser } from "../interfaces/IUser/user.interface";
 
 
 const messageSchema = new Schema<IMessage>({
-    content: {
-        type: string,
-        required: true,
+  content: {
+    type: String,
+    required: true,
+  },
+  sender: {
+    type: {
+      name: String,
+      email: String,
+      avatar: String || undefined,
     },
-    sender: {
-        type: IUser,
-        required: true,
-    },
-    room_id: {
-        type: string,
-        required: true,
-    },
-    isResponse: {
-        type: boolean,
-        required: true,
-    },
-    date: {
-        type: Date,
-        default: Date.now(),
-    }
+    required: true,
+  },
+  room_id: {
+    type: String,
+    required: true,
+  },
+  isResponse: {
+    type: Boolean,
+    required: true,
+  },
+  date: {
+    type: Date,
+    required: true,
+  }
 });
 
-const MessageModel =  Model<IMessage>('messages', messageSchema);
+const MessageModel = model<IMessage>('messages', messageSchema);
 export default MessageModel;

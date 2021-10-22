@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { RoomController } from '../controllers/RoomController';
-import { RoomService } from '../service/RoomSerivice';
 import { authorization } from '../middleware/authorization';
+import { roomService } from './injection';
 
 
 const routes = Router();
-const roomController = new RoomController(new RoomService());
+const roomController = new RoomController(roomService);
 
 routes.get('/rooms', authorization, roomController.index);
 routes.get('/rooms/:id', authorization, roomController.show);

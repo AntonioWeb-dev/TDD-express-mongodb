@@ -1,10 +1,15 @@
-import { IMessage } from '../../interfaces/IChat/message.interface';
+import { IRoomService } from '../../interfaces/IRoom/roomService.interface';
 import { ISocket } from '../../interfaces/socket.interface';
+import MessageModel from '../../models/Message';
+import { MessageRepository } from '../../repositories/MessageRepository';
+import { messageService, roomService } from '../../routes/injection';
+import { MessageService } from '../../service/MessageService';
 import { RoomService } from '../../service/RoomSerivice';
+import { roomMessages } from './room';
+import { sendMessage } from './sendMessage';
 
 // joinRomm - make the join with the rooms from database
-async function joinRoom(socket: ISocket, userID: string) {
-  const roomService = new RoomService()
+async function joinRoom(socket: ISocket, userID: string, roomService: IRoomService) {
   const rooms = await roomService.findRoomByMemberID(userID)
   const roomIDS = rooms.map(room => {
     return room._id
@@ -25,13 +30,14 @@ export function handlerEventsWhenConnected(io: any) {
 
     let rooms: any[] = []
     if (socket.userID) {
-      rooms = await joinRoom(socket, socket.userID)
+      rooms = await joinRoom(socket, socket.userID, roomService);
     }
     socket.emit('yourRooms', rooms);
 
-    socket.on("send-message", (message: IMessage) => {
-      socket.to(message.room).emit("recive-message", message)
-    })
+
+    roomMessages(socket, messageService);
+    sendMessage(socket, messageService, roomService);
+
   })
 
 }
