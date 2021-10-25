@@ -5,7 +5,7 @@ import fs from 'fs';
 import { IS3Service } from '../../../../interfaces/s3.interface';
 
 
-export async function UploadImage(s3Client: IS3Service, directory: string, filename: string) {
+export async function UploadImage(s3Client: IS3Service, directory: string, filename: string, folder: string) {
 
   const originalPath = path.resolve(directory, filename);
   const ContentType = mime.getType(originalPath);
@@ -18,7 +18,7 @@ export async function UploadImage(s3Client: IS3Service, directory: string, filen
   try {
     await s3Client.send(new PutObjectCommand({
       Bucket: bucket,
-      Key: filename,
+      Key: `${folder}/${filename}`,
       ACL: 'public-read',
       Body: fileContent,
       ContentType,
@@ -28,7 +28,7 @@ export async function UploadImage(s3Client: IS3Service, directory: string, filen
         throw Error("Failed to delete the file")
       }
     });
-    return `https://${bucket}.s3.amazonaws.com/${filename}`
+    return `https://${bucket}.s3.amazonaws.com/${folder}/${filename}`
   } catch (err) {
     return undefined;
   }

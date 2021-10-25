@@ -1,16 +1,24 @@
 import { NextFunction, Request, Response } from 'express';
+import { deleteImage } from '../infra/aws/services/S3/deleteImage';
+import { UploadImage } from '../infra/aws/services/S3/uploadImage';
 import { IRoomService } from '../interfaces/IRoom/roomService.interface';
+import { IS3Service } from '../interfaces/s3.interface';
+import MulterConfig from '../utils/Multer';
+
 
 export class RoomController {
   private roomService: IRoomService;
-  constructor(roomService: IRoomService) {
+  private S3: IS3Service;
+  constructor(roomService: IRoomService, S3: IS3Service) {
     this.roomService = roomService;
+    this.S3 = S3;
     this.create = this.create.bind(this);
     this.index = this.index.bind(this);
     this.show = this.show.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
     this.newMember = this.newMember.bind(this);
+    this.removeMember = this.removeMember.bind(this);
   }
 
   async index(req: Request, res: Response, next: NextFunction) {
@@ -33,19 +41,29 @@ export class RoomController {
 
   async create(req: Request, res: Response, next: NextFunction) {
     const ownerId = req.user_id;
-    const { maxConnections, name } = req.body;
+    const { name } = JSON.parse(req.body['body']);
+    const file = req.file;
+
+    let avatarURL: string | undefined;
+    if (file != null) {
+      avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename, 'rooms_avatars')
+    }
+
     try {
       const members = [ownerId]
       const admins = [ownerId]
       const newRoom = await this.roomService.create({
-        maxConnections,
         ownerId,
         name,
+        room_avatar: avatarURL,
         members,
         admins,
       });
       return res.json(newRoom);
     } catch (err: any) {
+      if (file != null && typeof (avatarURL) == 'string') {
+        await deleteImage(this.S3, avatarURL)
+      }
       next(err)
     }
   }
@@ -75,10 +93,21 @@ export class RoomController {
 
   async newMember(req: Request, res: Response, next: NextFunction) {
     const { roomID } = req.params
-    const { userID } = req.body;
+    const { user_id } = req.body;
     try {
-      const room = await this.roomService.addMember(userID, roomID)
+      const room = await this.roomService.addMember(user_id, roomID)
       return res.json(room)
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  async removeMember(req: Request, res: Response, next: NextFunction) {
+    const { roomID } = req.params
+    const { user_id } = req.body;
+    try {
+      await this.roomService.removeMember(roomID, user_id);
+      return res.status(204).json({})
     } catch (err) {
       next(err)
     }

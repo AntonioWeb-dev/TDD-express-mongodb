@@ -1,5 +1,6 @@
 import validator from 'validator';
 import argon2 from 'argon2';
+import mongoose from 'mongoose';
 import UserModel from '../models/User';
 import CustomError from '../utils/CustomError';
 
@@ -39,9 +40,12 @@ export class UserService implements IUserService {
   async create(user: IUser): Promise<any> {
     const { email, name, password } = user;
 
-    // check if the params are valid
+    // check if the data are valid
     UserService.emailValidation(email);
     UserService.nameValidation(name);
+    if (!password) {
+      throw new CustomError('Missing data', 400);
+    }
     const passwordHash = await UserService.passwordHash(password)
 
     const userAlreadyExist = await UserModel.find({ email });
@@ -111,6 +115,15 @@ export class UserService implements IUserService {
       throw new CustomError('User not found', 404);
     }
     return user;
+  }
+
+  async findByIds<T>(ids: string[] | T[]): Promise<IUser[]> {
+    const user_ids: string[] = [];
+    ids.forEach(id => typeof (id) == 'string' ? user_ids.push(id.trim()) : null);
+
+    const users = await UserModel.find({ _id: { $in: user_ids } });
+    const usersToreturn = users.map((user) => ({ _id: user._id, name: user.name, email: user.email, avatar: user.avatar }))
+    return usersToreturn;
   }
 
   // ========== validations ==========

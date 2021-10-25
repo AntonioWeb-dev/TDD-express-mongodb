@@ -14,4 +14,5 @@ export interface IRoomService {
   addMember(userID: string, roomID: string): Promise<IRoom>
   findRoomByMemberID(userID: string): Promise<IRoom[]>
   updateLastMessage(id: string, message: TLastMessage): Promise<void>;
+  removeMember(room_id: string, id: string): Promise<void>;
 }

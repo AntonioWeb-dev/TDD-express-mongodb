@@ -19,7 +19,7 @@ export class AuthenticationController {
     const user = await this.userService.findByEmail(email);
     let token: string;
 
-    if (await argon.verify(user.password, password)) {
+    if (user.password && await argon.verify(user.password, password)) {
       token = jwt.sign({ id: user._id, email: user.email, name: user.name }, this.secretKey, { expiresIn: 60 * (60 * 2) });
       return res.json({ token, avatar: user.avatar, email: user.email, user_id: user._id, name: user.name });
     } else {

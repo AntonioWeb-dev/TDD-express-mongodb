@@ -36,7 +36,7 @@ export class RoomService implements IRoomService {
   * @desc Responsible to create a room
   **/
   async create(room: IRoom): Promise<any> {
-    const { ownerId, maxConnections, name, members, admins } = room;
+    const { ownerId, name, members, admins } = room;
 
     // check if user exist
     await this.userService.show(ownerId);
@@ -46,7 +46,7 @@ export class RoomService implements IRoomService {
     if (roomAlreadyExist) {
       throw new CustomError('Room already exist', 400);
     }
-    const newRoom = new RoomModel({ ownerId, maxConnections, name, members, admins });
+    const newRoom = new RoomModel({ ownerId, room_avatar: room.room_avatar, name, members, admins });
     try {
       await newRoom.save();
     } catch (err) {
@@ -75,7 +75,7 @@ export class RoomService implements IRoomService {
   * @desc Responsible to handle with room data update
   **/
   async update(id: string, data: IRoom): Promise<IRoom> {
-    const { ownerId, name, maxConnections } = data;
+    const { ownerId, name } = data;
     // WARNING: No validation yet
 
     await RoomModel.findOneAndUpdate({ _id: id }, data);
@@ -101,6 +101,23 @@ export class RoomService implements IRoomService {
       throw new CustomError('Internal error server', 500);
     }
     return isDeleted;
+  }
+
+  async removeMember(room_id: string, id: string): Promise<void> {
+    // check if the room exist
+    const room = await RoomModel.findOne({ _id: room_id });
+    if (!room) {
+      throw new CustomError('Room not exist', 404);
+    }
+    const userIndex = room.members.findIndex(user_id => id === user_id);
+    if (userIndex != -1) {
+      room.members.splice(userIndex, 1);
+    }
+    try {
+      await RoomModel.findOneAndUpdate({ _id: room_id }, room);
+    } catch (err) {
+      throw new CustomError('Internal error Server', 500);
+    }
   }
 
   async findRoomByMemberID(userID: string): Promise<IRoom[]> {
