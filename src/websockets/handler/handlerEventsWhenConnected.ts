@@ -1,10 +1,6 @@
 import { IRoomService } from '../../interfaces/IRoom/roomService.interface';
 import { ISocket } from '../../interfaces/socket.interface';
-import MessageModel from '../../models/Message';
-import { MessageRepository } from '../../repositories/MessageRepository';
 import { messageService, roomService } from '../../routes/injection';
-import { MessageService } from '../../service/MessageService';
-import { RoomService } from '../../service/RoomSerivice';
 import { roomMessages } from './room';
 import { sendMessage } from './sendMessage';
 

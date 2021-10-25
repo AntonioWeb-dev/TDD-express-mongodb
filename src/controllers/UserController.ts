@@ -29,6 +29,20 @@ export class UserController {
   }
 
   async index(req: Request, res: Response, next: NextFunction) {
+    const { ids } = req.query;
+
+    if (typeof (ids) == 'string') {
+      const user_ids = ids.split(/\[|\]|,/gi)
+      user_ids.pop()
+      user_ids.shift()
+      try {
+        const users = await this.userService.findByIds(user_ids);
+        return res.json(users);
+      } catch (err) {
+        next(err)
+      }
+    }
+
     try {
       const users = await this.userService.index();
       return res.json(users);
@@ -49,6 +63,16 @@ export class UserController {
     }
   }
 
+  async findUsers(req: Request, res: Response, next: NextFunction) {
+    const { user_ids } = req.body;
+    try {
+      const users = await this.userService.findByIds(user_ids);
+      return res.json(users);
+    } catch (err) {
+      next(err)
+    }
+  }
+
   async create(req: Request, res: Response, next: NextFunction) {
     const { name, email, password } = JSON.parse(req.body['body']);
     const file = req.file;
@@ -56,7 +80,7 @@ export class UserController {
     let avatarURL: string | undefined;
     let newUser: IUser;
     if (file != null) {
-      avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename)
+      avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename, 'users_avatars')
     }
     try {
       newUser = await this.userService.create({ name, email, avatar: avatarURL, password })
@@ -78,7 +102,7 @@ export class UserController {
     const file = req.file;
     let avatarURL: string | undefined;
     if (file != null) {
-      avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename)
+      avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename, 'users_avatars')
     }
     try {
       const user = await this.userService.updateAvatar(req.user_id, avatarURL)
@@ -93,9 +117,9 @@ export class UserController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
-    // if (id !== req.user_id) {
-    //   return res.status(403).json({});
-    // }
+    if (id !== req.user_id) {
+      return res.status(403).json({});
+    }
     let isDeleted;
     try {
       isDeleted = await this.userService.delete(id);
@@ -107,6 +131,7 @@ export class UserController {
     }
     return res.json(isDeleted);
   }
+
   async update(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     if (id !== req.user_id) {

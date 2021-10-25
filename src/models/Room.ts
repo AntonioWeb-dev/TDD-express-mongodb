@@ -16,6 +16,10 @@ const roomSchema = new Schema<IRoom>({
   members: [{
     type: String,
   }],
+  room_avatar: {
+    type: String,
+    required: true
+  },
   last_message: {
     type: {
       content: String,
@@ -23,11 +27,6 @@ const roomSchema = new Schema<IRoom>({
     },
     default: {},
   },
-  maxConnections: {
-    type: Number,
-    default: 0,
-    min: [0, 'The numbers of connections has to be > 0'],
-  }
 });
 
 const RoomModel = model<IRoom>('Rooms', roomSchema);

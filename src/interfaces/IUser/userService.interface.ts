@@ -7,4 +7,5 @@ export interface IUserService {
   updateAvatar(id: string, urlS3: string | undefined): Promise<IUser>;
   delete(id: string): Promise<IUser>;
   findByEmail(email: string): Promise<IUser>;
+  findByIds<T>(ids: string[] | T[]): Promise<IUser[]>;
 }
