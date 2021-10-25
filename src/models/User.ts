@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IUser } from '../interfaces/IUser/user.interface';
+import { IUser, TContact } from '../interfaces/IUser/user.interface';
 
 const userSchema = new Schema<IUser>({
   name: {
@@ -10,6 +10,10 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
     unique: true,
+  },
+  contacts: {
+    type: [TContact],
+    default: [],
   },
   password: {
     type: String,
