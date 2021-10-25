@@ -20,6 +20,7 @@ routes.post('/users', fileMiddleware.single('avatar'), userController.create);
 routes.delete('/users/:id', authorization, userController.delete);
 routes.put('/users/updateavatar', authorization, fileMiddleware.single('avatar'), userController.updateImage);
 routes.put('/users/:id', authorization, userController.update);
+routes.put('/users/:id/contacts', authorization, userController.addContact);
 
 routes.post('/login', authenticationControler.login)
 

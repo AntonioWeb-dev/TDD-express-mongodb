@@ -1,4 +1,4 @@
-import { IUser } from './user.interface';
+import { IUser, TContact } from './user.interface';
 export interface IUserService {
   create(user: IUser): Promise<IUser>;
   show(id: string): Promise<IUser>;
@@ -8,4 +8,5 @@ export interface IUserService {
   delete(id: string): Promise<IUser>;
   findByEmail(email: string): Promise<IUser>;
   findByIds<T>(ids: string[] | T[]): Promise<IUser[]>;
+  addContact(id: string, contact: TContact): Promise<void>;
 }

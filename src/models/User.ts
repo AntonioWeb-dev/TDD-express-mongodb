@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
 import { IUser } from '../interfaces/IUser/user.interface';
 
 const userSchema = new Schema<IUser>({
@@ -10,6 +10,15 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
     unique: true,
+  },
+  contacts: {
+    type: [{
+      last_message: {
+        content: String,
+        date: Date
+      },
+    }],
+    default: [],
   },
   password: {
     type: String,

@@ -1,11 +1,10 @@
 import validator from 'validator';
 import argon2 from 'argon2';
-import mongoose from 'mongoose';
 import UserModel from '../models/User';
 import CustomError from '../utils/CustomError';
 
 import { IUserService } from '../interfaces/IUser/userService.interface';
-import { IUser } from '../interfaces/IUser/user.interface';
+import { IUser, TContact } from '../interfaces/IUser/user.interface';
 import { IMessageService } from '../interfaces/IChat/messageService.interface';
 
 
@@ -74,7 +73,8 @@ export class UserService implements IUserService {
       UserService.nameValidation(name);
     }
 
-    await UserModel.findOneAndUpdate({ _id: id }, data);
+
+    await UserModel.findOneAndUpdate({ _id: id }, { data });
     const userUpdated = await UserModel.findOne({ _id: id });
     if (!userUpdated) {
       throw new CustomError('Internal error server', 500);
@@ -96,6 +96,28 @@ export class UserService implements IUserService {
     }
     await this.messageService.updateSender(sender);
     return userUpdated;
+  }
+
+  async addContact(id: string, contact: TContact): Promise<void> {
+    const contactExist = await UserModel.findOne({ _id: contact._id });
+    if (!contactExist) {
+      throw new CustomError('Contact not exist', 404);
+    }
+    try {
+      const user = await UserModel.findOne({ _id: id });
+      if (!user) {
+        throw new CustomError('Your account was not found', 404);
+
+      }
+      const contactsUpdated = user.contacts;
+      contactsUpdated.push(contact);
+      console.log(contactsUpdated);
+      await UserModel.findOneAndUpdate({ _id: id }, { contacts: contactsUpdated });
+    } catch (err) {
+      throw new CustomError('Internal error server', 500);
+    }
+
+
   }
 
   // Remove user from database
@@ -122,7 +144,7 @@ export class UserService implements IUserService {
     ids.forEach(id => typeof (id) == 'string' ? user_ids.push(id.trim()) : null);
 
     const users = await UserModel.find({ _id: { $in: user_ids } });
-    const usersToreturn = users.map((user) => ({ _id: user._id, name: user.name, email: user.email, avatar: user.avatar }))
+    const usersToreturn = users.map((user) => ({ _id: user._id, name: user.name, email: user.email, avatar: user.avatar, contacts: user.contacts }))
     return usersToreturn;
   }
 

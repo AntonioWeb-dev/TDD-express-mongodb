@@ -26,6 +26,7 @@ export class UserController {
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
     this.updateImage = this.updateImage.bind(this);
+    this.addContact = this.addContact.bind(this);
   }
 
   async index(req: Request, res: Response, next: NextFunction) {
@@ -36,6 +37,7 @@ export class UserController {
       user_ids.pop()
       user_ids.shift()
       try {
+        console.log(user_ids);
         const users = await this.userService.findByIds(user_ids);
         return res.json(users);
       } catch (err) {
@@ -83,7 +85,7 @@ export class UserController {
       avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename, 'users_avatars')
     }
     try {
-      newUser = await this.userService.create({ name, email, avatar: avatarURL, password })
+      newUser = await this.userService.create({ name, email, avatar: avatarURL, password, contacts: [] })
       // Get template html, params is the file's name without *.html
       const template = await GetTemplates('CreateAcount');
       const emailService = new SendEmail("Conta criada", template);
@@ -144,5 +146,21 @@ export class UserController {
       next(err);
     }
     return res.json(userUpdated);
+  }
+
+  async addContact(req: Request, res: Response, next: NextFunction) {
+    const { contact } = req.body;
+    if (!contact) {
+      return res.status(400).json({});
+    }
+    if (req.params.id !== req.user_id) {
+      return res.status(403).json({});
+    }
+    try {
+      await this.userService.addContact(req.user_id, contact);
+      return res.status(204).json({});
+    } catch (err) {
+      next(err)
+    }
   }
 }
