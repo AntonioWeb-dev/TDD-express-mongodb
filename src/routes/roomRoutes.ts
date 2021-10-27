@@ -18,7 +18,7 @@ routes.post('/rooms', authorization, fileMiddleware.single('avatar'), roomContro
 routes.delete('/rooms/:id', authorization, roomController.delete);
 routes.put('/rooms/:id', authorization, roomController.update);
 routes.put('/rooms/newmember/:roomID', authorization, roomController.newMember);
-routes.put('/rooms/removemember/:roomID', authorization, roomController.removeMember);
+routes.delete('/rooms/:roomID/members', authorization, roomController.removeMember);
 
 
 export default routes;

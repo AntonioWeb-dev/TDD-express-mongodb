@@ -18,7 +18,7 @@ const roomSchema = new Schema<IRoom>({
   }],
   room_avatar: {
     type: String,
-    required: true
+    default: 'undefined'
   },
   last_message: {
     type: {

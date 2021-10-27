@@ -37,7 +37,6 @@ export class UserController {
       user_ids.pop()
       user_ids.shift()
       try {
-        console.log(user_ids);
         const users = await this.userService.findByIds(user_ids);
         return res.json(users);
       } catch (err) {

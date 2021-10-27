@@ -45,7 +45,7 @@ export class RoomController {
     const file = req.file;
 
     let avatarURL: string | undefined;
-    if (file != null) {
+    if (file != null && file) {
       avatarURL = await UploadImage(this.S3, MulterConfig.directory, file.filename, 'rooms_avatars')
     }
 

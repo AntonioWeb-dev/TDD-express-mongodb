@@ -142,8 +142,13 @@ export class UserService implements IUserService {
   async findByIds<T>(ids: string[] | T[]): Promise<IUser[]> {
     const user_ids: string[] = [];
     ids.forEach(id => typeof (id) == 'string' ? user_ids.push(id.trim()) : null);
+    let users: IUser[];
+    try {
+      users = await UserModel.find({ _id: { $in: user_ids } });
+    } catch (err) {
+      throw new CustomError('Users not found', 404);
 
-    const users = await UserModel.find({ _id: { $in: user_ids } });
+    }
     const usersToreturn = users.map((user) => ({ _id: user._id, name: user.name, email: user.email, avatar: user.avatar, contacts: user.contacts }))
     return usersToreturn;
   }
