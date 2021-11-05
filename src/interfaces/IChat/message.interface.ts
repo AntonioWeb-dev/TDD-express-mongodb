@@ -19,6 +19,7 @@ export interface IMessage {
   sender: TSender;
   room_id: string;
   type: TMessage;
+  duration: number;
   isResponse: boolean;
   date: Date;
 }

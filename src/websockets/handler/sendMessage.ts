@@ -22,7 +22,6 @@ export function sendMessage(socket: ISocket, messageService: IMessageService, ro
 
   socket.on('audio-message', async (audioMessage: IMessage, audioBuufer: Buffer, time: number) => {
     try {
-      console.log(time);
       const audioURL = await UploadBuffer(s3Client, audioBuufer);
 
       audioMessage.content = audioURL;

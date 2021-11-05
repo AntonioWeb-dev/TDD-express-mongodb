@@ -27,6 +27,10 @@ const messageSchema = new Schema<IMessage>({
     type: String,
     default: "TEXT",
   },
+  duration: {
+    type: Number,
+    default: 0,
+  },
   date: {
     type: Date,
     required: true,
