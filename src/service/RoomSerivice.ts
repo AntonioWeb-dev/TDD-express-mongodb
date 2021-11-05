@@ -121,7 +121,8 @@ export class RoomService implements IRoomService {
   }
 
   async findRoomByMemberID(userID: string): Promise<IRoom[]> {
-    const rooms = await RoomModel.find({ members: userID });
+    const rooms = await RoomModel.find({ members: userID })
+      .sort([['updatedAt', 'descending']]);
     return rooms;
   }
 

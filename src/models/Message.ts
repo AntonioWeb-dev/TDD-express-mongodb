@@ -23,6 +23,10 @@ const messageSchema = new Schema<IMessage>({
     type: Boolean,
     required: true,
   },
+  type: {
+    type: String,
+    default: "TEXT",
+  },
   date: {
     type: Date,
     required: true,

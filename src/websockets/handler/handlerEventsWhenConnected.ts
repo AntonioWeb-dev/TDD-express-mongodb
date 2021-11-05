@@ -10,6 +10,7 @@ async function joinRoom(socket: ISocket, userID: string, roomService: IRoomServi
   const roomIDS = rooms.map(room => {
     return room._id
   });
+
   for (let room of roomIDS) {
     if (room) {
       //isUsed toString() because the IDs are objectId and we need to convert to string

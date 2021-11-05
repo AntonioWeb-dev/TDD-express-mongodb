@@ -27,6 +27,8 @@ const roomSchema = new Schema<IRoom>({
     },
     default: {},
   },
+}, {
+  timestamps: true
 });
 
 const RoomModel = model<IRoom>('Rooms', roomSchema);
